@@ -41,7 +41,10 @@ namespace GeneralStoreAPI.Controllers
         [HttpGet]
         public async Task<IHttpActionResult> GetAllProducts()
         {
+            // Create a list that holds all products
             List<Product> products = await _context.Products.ToListAsync();
+
+            // return Ok action result and products
             return Ok(products);
         }
 
@@ -50,18 +53,22 @@ namespace GeneralStoreAPI.Controllers
         [HttpGet]
         public async Task<IHttpActionResult> GetProductById([FromUri] int id)
         {
+            // Find the product by its Id
             Product product = await _context.Products.FindAsync(id);
 
+            // Check if product is not null
             if (product != null)
             {
+                // If product IS NOT null return Ok action result and product
                 return Ok(product);
             }
 
+            // If product IS null return Not Found action result
             return NotFound();
         }
 
         // PUT
-        // api/Product/{id}
+        // api/Product?sku={sku}
         [HttpPut]
         public async Task<IHttpActionResult> UpdateProductBySKU([FromUri] string sku, [FromBody] Product updatedProduct)
         {
@@ -94,7 +101,7 @@ namespace GeneralStoreAPI.Controllers
         }
 
         // DELETE
-        // api/Product/{id}
+        // api/Product?sku={sku}
         [HttpDelete]
         public async Task<IHttpActionResult> DeleteProductBySKU([FromUri] string sku)
         {

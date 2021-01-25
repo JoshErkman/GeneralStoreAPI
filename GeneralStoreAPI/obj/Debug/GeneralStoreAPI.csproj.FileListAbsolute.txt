@@ -116,3 +116,4 @@ C:\Users\erkma\Desktop\ElevenFiftyProjects\Blue Badge\GeneralStoreAPI\GeneralSto
 C:\Users\erkma\Desktop\ElevenFiftyProjects\Blue Badge\GeneralStoreAPI\GeneralStoreAPI\obj\Debug\GeneralStoreAPI.pdb
 C:\Users\erkma\Desktop\ElevenFiftyProjects\Blue Badge\GeneralStoreAPI\GeneralStoreAPI\obj\Debug\GeneralStoreAPI.Migrations.InitalMigration.resources
 C:\Users\erkma\Desktop\ElevenFiftyProjects\Blue Badge\GeneralStoreAPI\GeneralStoreAPI\obj\Debug\GeneralStoreAPI.csproj.GenerateResource.cache
+C:\Users\erkma\Desktop\ElevenFiftyProjects\Blue Badge\GeneralStoreAPI\GeneralStoreAPI\obj\Debug\GeneralStoreAPI.Migrations.anothermigration.resources
