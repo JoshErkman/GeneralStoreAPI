@@ -39,6 +39,7 @@ namespace GeneralStoreAPI.Controllers
                 }
 
                 // Store the transaction in the database
+                // Remove the items that were purchased
                 _context.Transactions.Add(transaction);
                 if (await _context.SaveChangesAsync() == 1)
                 {
@@ -124,14 +125,73 @@ namespace GeneralStoreAPI.Controllers
             if (transaction is null)
                 return NotFound();
 
-            // Update the properties
-            transaction.CustomerId = updatedTransaction.CustomerId;
-            transaction.ProductSKU = updatedTransaction.ProductSKU;
-            transaction.ItemCount = updatedTransaction.ItemCount;
-            transaction.DateOfTransaction = transaction.DateOfTransaction;
+            // Update the customer Id if they are different
+            if (transaction.CustomerId != updatedTransaction.CustomerId)
+            {
+                transaction.CustomerId = updatedTransaction.CustomerId;
+            }
 
+            // Check if product SKUs are different
+            if (transaction.ProductSKU != updatedTransaction.ProductSKU)
+            {
+                // If the product skus are different add the item count for the original sku back to the inventory
+                transaction.Product.NumberInInventory = transaction.Product.NumberInInventory + transaction.ItemCount;
+                
+                // change the product sku, itemcount, and number in inventory
+                transaction.ProductSKU = updatedTransaction.ProductSKU;
+                transaction.ItemCount = updatedTransaction.ItemCount;
+                transaction.Product.NumberInInventory = updatedTransaction.Product.NumberInInventory;
+
+                // subtract the updated product from the inventory
+                transaction.Product.NumberInInventory = transaction.Product.NumberInInventory - transaction.ItemCount;
+            }
+
+            // Check if the product skus are the same
+            if (transaction.ProductSKU == updatedTransaction.ProductSKU)
+            {
+                // If the skus are the same see if the item count is different and act accordingly
+                if (transaction.ItemCount < updatedTransaction.ItemCount)
+                {
+                    int transactionDifference;
+                    transactionDifference = updatedTransaction.ItemCount - transaction.ItemCount;
+                    transaction.Product.NumberInInventory = transaction.Product.NumberInInventory - transactionDifference;
+                }
+                else if (transaction.ItemCount > updatedTransaction.ItemCount)
+                {
+                    int transactionDifference;
+                    transactionDifference = transaction.ItemCount - updatedTransaction.ItemCount;
+                    transaction.Product.NumberInInventory = transaction.Product.NumberInInventory + transactionDifference;
+                }
+                else { }
+            }
+
+            transaction.DateOfTransaction = updatedTransaction.DateOfTransaction;
+
+            return Ok("Your transaction was updated.");
         }
 
         // DELETE
+        [HttpDelete]
+        public async Task<IHttpActionResult> DeleteTransactionById([FromUri] int transactionId)
+        {
+            // find transaction by id
+            Transaction transaction = await _context.Transactions.FindAsync(transactionId);
+
+            // Check if transaction exist
+            if (transaction is null)
+                return BadRequest("There is no transaction by that Id");
+
+            // Return product of the transaction to the inventory
+            transaction.Product.NumberInInventory = transaction.Product.NumberInInventory + transaction.ItemCount;
+
+            // Remove transaction
+            _context.Transactions.Remove(transaction);
+
+            // return action result
+            return Ok("This transaction was deleted.");
+        }
+
+
+
     }
 }
